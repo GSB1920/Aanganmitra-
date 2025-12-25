@@ -54,36 +54,50 @@ export async function GET(req: NextRequest) {
     if (pics && pics.length > 0) {
       const bucket = "property-images";
       const byProp: Record<string, string[]> = {};
-      for (const r of pics) {
-        const arr = byProp[r.property_id] || (byProp[r.property_id] = []);
+      
+      await Promise.all(pics.map(async (r) => {
         const raw = r.image_url || "";
         const match = raw.match(/\/property-images\/(.+)$/);
         const rel = match ? match[1] : raw;
         const { data: signed } = await supabase.storage.from(bucket).createSignedUrl(rel, 3600);
         const url = signed?.signedUrl ?? raw;
-        arr.push(url);
-        if (!covers[r.property_id]) covers[r.property_id] = url;
-      }
+        
+        // We need to push to array, but parallel execution makes order unpredictable within the array if we just push.
+        // However, we can group them first or just accept that order is maintained by the client if it sorts by something, 
+        // but here we are building the map.
+        // Let's use a temporary structure or just synchronized push (JS is single threaded event loop, so push is safe, but order of completion varies).
+        // Since we want to preserve order_index, we should sort them later or process them in order.
+        // Actually, pics is already ordered by order_index.
+        // If we map to promises and await all, we get an array of results in the same order as pics.
+        return { property_id: r.property_id, url };
+      })).then((results) => {
+        results.forEach(({ property_id, url }) => {
+          const arr = byProp[property_id] || (byProp[property_id] = []);
+          arr.push(url);
+          if (!covers[property_id]) covers[property_id] = url;
+        });
+      });
+      
       photosMap = byProp;
     }
     const missing = ids.filter((id) => !covers[id]);
     if (missing.length > 0) {
       const bucket = "property-images";
-      for (const id of missing) {
+      await Promise.all(missing.map(async (id) => {
         const { data: files } = await supabase.storage.from(bucket).list(`${id}`, { limit: 5 });
         if (files && files.length > 0) {
-          const signedUrls: string[] = [];
-          for (const f of files) {
+          const signedUrls = await Promise.all(files.map(async (f) => {
             const path = `${id}/${f.name}`;
             const { data: signed } = await supabase.storage.from(bucket).createSignedUrl(path, 3600);
-            if (signed?.signedUrl) signedUrls.push(signed.signedUrl);
-          }
-          if (signedUrls.length > 0) {
-            covers[id] = signedUrls[0];
-            photosMap[id] = signedUrls;
+            return signed?.signedUrl;
+          }));
+          const validUrls = signedUrls.filter(Boolean) as string[];
+          if (validUrls.length > 0) {
+            covers[id] = validUrls[0];
+            photosMap[id] = validUrls;
           }
         }
-      }
+      }));
     }
   }
 

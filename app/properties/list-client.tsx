@@ -222,6 +222,20 @@ export default function PropertiesListClient() {
             </div>
           </div>
         ))}
+        
+        {items.length === 0 && loading && [...Array(8)].map((_, i) => (
+          <div key={i} className="bg-white rounded-xl border border-gray-200 overflow-hidden h-full">
+            <div className="aspect-[4/3] bg-gray-100 animate-pulse" />
+            <div className="p-4 space-y-3">
+              <div className="h-6 bg-gray-100 rounded w-3/4 animate-pulse" />
+              <div className="h-4 bg-gray-100 rounded w-1/2 animate-pulse" />
+              <div className="pt-3 border-t border-gray-100 grid grid-cols-2 gap-3">
+                <div className="h-4 bg-gray-100 rounded animate-pulse" />
+                <div className="h-4 bg-gray-100 rounded animate-pulse" />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       <div ref={sentinelRef} className="h-4" />
