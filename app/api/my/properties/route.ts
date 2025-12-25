@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 
   let q = supabase
     .from("properties")
-    .select("id,title,city,property_type,area_sqft,asking_price")
+    .select("id,title,city,property_type,area_sqft,asking_price,listing_type")
     .eq("created_by", user.id)
     .range(from, to);
 

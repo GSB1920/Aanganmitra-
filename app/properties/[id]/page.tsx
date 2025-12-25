@@ -145,6 +145,12 @@ export default async function PropertyViewPage({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
               <div className="space-y-4">
                 <div>
+                  <label className="text-sm text-gray-500">Listing Type</label>
+                  <p className="font-medium text-gray-900 capitalize flex items-center mt-1">
+                    {property.listing_type === 'rental' ? 'For Rent' : 'For Sale'}
+                  </p>
+                </div>
+                <div>
                   <label className="text-sm text-gray-500">Property Type</label>
                   <p className="font-medium text-gray-900 capitalize flex items-center mt-1">
                     {property.property_type || "-"}

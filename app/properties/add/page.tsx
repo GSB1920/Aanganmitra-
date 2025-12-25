@@ -24,7 +24,8 @@ export default function AddPropertyPage() {
     if (currentStep === 2) {
       const zoning = String(fd.get("zoning") || "").trim();
       const type = String(fd.get("property_type") || "").trim();
-      if (!zoning || !type) return "Please select Zoning and Property Type.";
+      const listingType = String(fd.get("listing_type") || "").trim();
+      if (!zoning || !type || !listingType) return "Please select Zoning, Property Type and Listing Type.";
       return "";
     }
     if (currentStep === 3) {
@@ -163,6 +164,21 @@ export default function AddPropertyPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Listing Type <span className="text-red-500">*</span>
+                    </label>
+                    <div className="flex gap-4">
+                      <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 flex-1">
+                        <input type="radio" name="listing_type" value="sale" defaultChecked className="w-4 h-4 text-primary focus:ring-primary" />
+                        <span className="ml-2 text-gray-700">For Sale</span>
+                      </label>
+                      <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 flex-1">
+                        <input type="radio" name="listing_type" value="rental" className="w-4 h-4 text-primary focus:ring-primary" />
+                        <span className="ml-2 text-gray-700">For Rent</span>
+                      </label>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Zoning Type <span className="text-red-500">*</span>
                     </label>
                     <select
@@ -176,7 +192,9 @@ export default function AddPropertyPage() {
                       <option value="agriculture">Agriculture</option>
                     </select>
                   </div>
+                </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Property Type <span className="text-red-500">*</span>
@@ -192,9 +210,6 @@ export default function AddPropertyPage() {
                       <option value="shop">Shop</option>
                     </select>
                   </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Area (sq. ft.)

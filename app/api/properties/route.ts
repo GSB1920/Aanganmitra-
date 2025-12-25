@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
       address: formData.get('address') as string,
       zoning: formData.get('zoning') as string,
       property_type: formData.get('property_type') as string,
+      listing_type: formData.get('listing_type') as string || 'sale',
       rera: formData.get('rera') === 'on',
       area_sqft: formData.get('area_sqft') ? Number(formData.get('area_sqft')) : null,
       rate_per_sqft: formData.get('rate_per_sqft') ? Number(formData.get('rate_per_sqft')) : null,
