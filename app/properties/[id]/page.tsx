@@ -5,6 +5,7 @@ import LoadingButton from "@/components/ui/loading-button";
 import SubmitButton from "@/components/ui/submit-button";
 import ImageWithLoader from "@/components/ui/image-with-loader";
 import Carousel from "@/components/ui/carousel";
+import { MapPin, Ruler, Home, IndianRupee, User, Phone, Map, Trash2, Edit, ChevronLeft, Building2, CheckCircle2 } from "lucide-react";
 
 export default async function PropertyViewPage({
   params,
@@ -44,10 +45,14 @@ export default async function PropertyViewPage({
 
   if (error || !property) {
     return (
-      <div className="p-10">
-        <h1 className="text-xl font-semibold">Property Not Found</h1>
-        <Link href="/properties" className="text-blue-600 underline">
-          Go Back
+      <div className="flex flex-col items-center justify-center min-h-[60vh] p-10 text-center">
+        <div className="bg-gray-100 p-4 rounded-full mb-4">
+          <Home className="w-8 h-8 text-gray-500" />
+        </div>
+        <h1 className="text-xl font-semibold text-gray-900 mb-2">Property Not Found</h1>
+        <p className="text-gray-500 mb-6">The property you are looking for does not exist or has been removed.</p>
+        <Link href="/properties" className="text-primary font-medium hover:underline flex items-center">
+          <ChevronLeft className="w-4 h-4 mr-1" /> Back to Properties
         </Link>
       </div>
     );
@@ -74,13 +79,25 @@ export default async function PropertyViewPage({
       ]);
 
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
-        <Link href="/properties" className="text-blue-600 underline">
-          ← Back to List
-        </Link>
-        <div className="flex gap-2">
-          <LoadingButton href={`/properties/${property.id}/edit`} variant="primary">Edit</LoadingButton>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <Link href="/properties" className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors" title="Back to list">
+            <ChevronLeft className="w-6 h-6 text-gray-500" />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 truncate max-w-xl">{property.title}</h1>
+            <div className="flex items-center text-sm text-gray-500 mt-1">
+              <MapPin className="w-3.5 h-3.5 mr-1" />
+              {property.city} {property.address && `• ${property.address}`}
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-3">
+          <LoadingButton href={`/properties/${property.id}/edit`} variant="secondary" className="shadow-sm border border-gray-300">
+            <Edit className="w-4 h-4 mr-2" /> Edit
+          </LoadingButton>
           <form
             action={async () => {
               "use server";
@@ -104,45 +121,127 @@ export default async function PropertyViewPage({
               redirect("/properties");
             }}
           >
-            <SubmitButton variant="danger">Delete</SubmitButton>
+            <SubmitButton variant="danger" className="shadow-sm">
+              <Trash2 className="w-4 h-4 mr-2" /> Delete
+            </SubmitButton>
           </form>
         </div>
       </div>
 
-      <div className="space-y-6 bg-white border rounded-md shadow p-6">
-        <h1 className="text-2xl font-semibold">{property.title}</h1>
-
-        <Carousel images={images} className="w-full max-w-[480px] h-[300px]" />
-
-        <hr />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <div><span className="font-medium">City:</span> {property.city}</div>
-            <div><span className="font-medium">Address:</span> {property.address || "-"}</div>
-            <div><span className="font-medium">Area:</span> {property.area || "-"}</div>
-            <div><span className="font-medium">Zoning:</span> {property.zoning || "-"}</div>
-            <div><span className="font-medium">Type:</span> {property.property_type || "-"}</div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Main Content */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Images */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <Carousel images={images} className="w-full aspect-video bg-gray-100 object-contain" />
           </div>
-          <div className="space-y-2">
-            <div><span className="font-medium">Area (sqft):</span> {property.area_sqft ?? "-"}</div>
-            <div><span className="font-medium">Rate / sqft:</span> {property.rate_per_sqft ?? "-"}</div>
-            <div><span className="font-medium">RERA:</span> {property.rera ? "Yes" : "No"}</div>
-            <div><span className="font-medium">Asking Price:</span> {typeof property.asking_price === "number" ? formatINR.format(property.asking_price) : "-"}</div>
-            <div><span className="font-medium">Final Price:</span> {typeof property.final_price === "number" ? formatINR.format(property.final_price) : "-"}</div>
+
+          {/* Details */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+              <Building2 className="w-5 h-5 mr-2 text-primary" />
+              Property Details
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm text-gray-500">Property Type</label>
+                  <p className="font-medium text-gray-900 capitalize flex items-center mt-1">
+                    {property.property_type || "-"}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-500">Zoning</label>
+                  <p className="font-medium text-gray-900 capitalize mt-1">{property.zoning || "-"}</p>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-500">Address</label>
+                  <p className="font-medium text-gray-900 mt-1">{property.address || "-"}</p>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm text-gray-500">Area Size</label>
+                  <p className="font-medium text-gray-900 flex items-center mt-1">
+                    <Ruler className="w-4 h-4 mr-2 text-gray-400" />
+                    {property.area_sqft ? `${property.area_sqft.toLocaleString()} sqft` : "-"}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-500">Rate per sqft</label>
+                  <p className="font-medium text-gray-900 mt-1">
+                    {property.rate_per_sqft ? formatINR.format(property.rate_per_sqft) : "-"}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-500">RERA Registered</label>
+                  <p className="font-medium text-gray-900 flex items-center mt-1">
+                    {property.rera ? (
+                      <><CheckCircle2 className="w-4 h-4 mr-2 text-green-500" /> Yes</>
+                    ) : (
+                      <span className="text-gray-400">No</span>
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <hr />
+        {/* Sidebar */}
+        <div className="space-y-6">
+           {/* Price Card */}
+           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="text-sm text-gray-500 mb-1">Asking Price</div>
+              <div className="text-3xl font-bold text-primary mb-2">
+                {typeof property.asking_price === "number" ? formatINR.format(property.asking_price) : "Price on Request"}
+              </div>
+              {typeof property.final_price === "number" && (
+                <div className="flex justify-between items-center pt-3 border-t border-gray-100 mt-3">
+                  <span className="text-sm text-gray-500">Final Price</span>
+                  <span className="font-medium text-gray-900">{formatINR.format(property.final_price)}</span>
+                </div>
+              )}
+           </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <div><span className="font-medium">Owner Name:</span> {property.owner_name || "-"}</div>
-            <div><span className="font-medium">Owner Phone:</span> {property.owner_phone || "-"}</div>
-          </div>
-          <div className="space-y-2">
-            <div><span className="font-medium">Owner Address:</span> {property.owner_address || "-"}</div>
-          </div>
+           {/* Owner Card */}
+           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
+                <User className="w-4 h-4 mr-2 text-gray-500" /> 
+                Owner Information
+              </h3>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="bg-gray-100 p-2 rounded-full">
+                    <User className="w-4 h-4 text-gray-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Name</p>
+                    <p className="font-medium text-gray-900">{property.owner_name || "-"}</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <div className="bg-gray-100 p-2 rounded-full">
+                    <Phone className="w-4 h-4 text-gray-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Phone</p>
+                    <p className="font-medium text-gray-900">{property.owner_phone || "-"}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="bg-gray-100 p-2 rounded-full">
+                    <Map className="w-4 h-4 text-gray-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Address</p>
+                    <p className="font-medium text-gray-900 text-sm">{property.owner_address || "-"}</p>
+                  </div>
+                </div>
+              </div>
+           </div>
         </div>
       </div>
     </div>

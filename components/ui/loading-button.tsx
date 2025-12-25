@@ -22,10 +22,10 @@ export default function LoadingButton({ children, href, onClick, type = "button"
 
   const base = "inline-flex items-center justify-center rounded px-4 py-2 text-sm font-medium transition disabled:opacity-60 disabled:cursor-not-allowed";
   const styles = {
-    primary: "bg-blue-600 text-white hover:bg-blue-700",
-    secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200",
-    danger: "bg-red-600 text-white hover:bg-red-700",
-    ghost: "bg-transparent text-blue-600 hover:bg-blue-50",
+    primary: "bg-primary text-primary-foreground hover:bg-primary/90",
+    secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+    danger: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+    ghost: "bg-transparent text-primary hover:bg-primary/10",
   }[variant];
 
   async function handleClick() {

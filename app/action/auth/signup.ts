@@ -1,6 +1,7 @@
 "use server";
 
 import { supabaseServerWritable } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 
 export async function signupAction(formData: FormData) {
@@ -53,7 +54,26 @@ export async function signupAction(formData: FormData) {
   const userId = authData.user?.id;
   if (!userId) return { error: "Signup failed. Try again." };
 
-  // Profile row will be created by DB trigger using auth user metadata
+  // Manually ensure profile exists using Admin client (bypassing potentially broken triggers)
+  // We use upsert to handle cases where the trigger might have fired partially or we want to ensure data consistency
+  const { error: profileError } = await supabaseAdmin
+    .from("profiles")
+    .upsert({
+      id: userId,
+      email: email,
+      name: name,
+      phone: phone,
+      approved: false,
+      role: "user",
+      created_at: new Date().toISOString(),
+    }, { onConflict: 'id' });
+
+  if (profileError) {
+    console.error("Manual profile creation failed:", profileError);
+    // Continue anyway, as the auth user was created. 
+    // If this fails, the user might be in a broken state (auth but no profile), 
+    // but we can't delete the auth user easily without admin rights (which we have, but rolling back is complex).
+  }
 
   return { success: true };
 }

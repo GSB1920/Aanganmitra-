@@ -7,6 +7,8 @@ import LoadingButton from "@/components/ui/loading-button";
 import Modal from "@/components/ui/modal";
 import ImageWithLoader from "@/components/ui/image-with-loader";
 import Carousel from "@/components/ui/carousel";
+import { Search, Filter, MapPin, Ruler, Home, ArrowUpDown, ChevronDown, Building2, ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type Property = {
   id: string;
@@ -99,69 +101,133 @@ export default function PropertiesListClient() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="bg-white border rounded p-4 shadow flex flex-wrap gap-3 items-end">
-        <div>
-          <label className="text-sm">Search</label>
-          <input value={query} onChange={(e) => setQuery(e.target.value)} className="w-64 p-2 border rounded" placeholder="Search by title" />
+    <div className="space-y-6">
+      {/* Search and Filters */}
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div className="relative w-full md:max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <input 
+            value={query} 
+            onChange={(e) => setQuery(e.target.value)} 
+            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none text-sm" 
+            placeholder="Search properties by title, location..." 
+          />
         </div>
-        <div>
-          <label className="text-sm">Sort</label>
-          <select value={sort} onChange={(e) => setSort(e.target.value)} className="w-48 p-2 border rounded">
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
-            <option value="price_asc">Price: Low to High</option>
-            <option value="price_desc">Price: High to Low</option>
-            <option value="area_desc">Area: Large to Small</option>
-          </select>
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="relative flex-1 md:flex-none">
+            <select 
+              value={sort} 
+              onChange={(e) => setSort(e.target.value)} 
+              className="appearance-none w-full md:w-48 pl-4 pr-10 py-2.5 border border-gray-200 rounded-lg bg-gray-50 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none cursor-pointer text-sm"
+            >
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="area_desc">Area: Large to Small</option>
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
+          </div>
+          <button 
+            onClick={openFilters} 
+            className="flex items-center px-4 py-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700 bg-white"
+          >
+            <Filter className="w-4 h-4 mr-2 text-gray-500" />
+            Filters
+          </button>
         </div>
-        <LoadingButton onClick={openFilters} variant="secondary">Filters</LoadingButton>
       </div>
 
+      {/* Empty State */}
       {items.length === 0 && !loading && (
-        <p className="text-gray-600">No properties found.</p>
+        <div className="text-center py-16 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+          <div className="bg-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-gray-100">
+            <Search className="w-8 h-8 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900">No properties found</h3>
+          <p className="text-gray-500 mt-1 max-w-sm mx-auto">
+            We couldn't find any properties matching your search. Try adjusting your filters or search terms.
+          </p>
+          <button 
+            onClick={() => { setQuery(""); setSort("newest"); }}
+            className="mt-4 text-primary font-medium hover:underline"
+          >
+            Clear search
+          </button>
+        </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {/* Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {items.map((p) => (
-          <div key={p.id} className="bg-white rounded-xl shadow border overflow-hidden">
-            <div className="relative h-40 bg-gray-100">
-              {/* images */}
+          <div key={p.id} className="group bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col h-full hover:-translate-y-1">
+            <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
               <Carousel
                 images={
                   photosMap[p.id] && photosMap[p.id].length > 0
                     ? photosMap[p.id]
                     : (photos[p.id] ? [photos[p.id]] : [])
                 }
-                className="w-full h-full"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
-              {/* price badge */}
-              {typeof p.asking_price === "number" && (
-                <span className="absolute bottom-2 left-2 bg-black/70 text-white text-sm px-2 py-1 rounded">
-                  {formatINR.format(p.asking_price)}
-                </span>
-              )}
+              <div className="absolute top-3 left-3">
+                 <span className="bg-white/95 backdrop-blur-sm text-gray-900 text-xs font-bold px-2.5 py-1 rounded-md shadow-sm border border-gray-100 flex items-center uppercase tracking-wide">
+                   <Home className="w-3 h-3 mr-1 text-primary" />
+                   {p.property_type || "Property"}
+                 </span>
+              </div>
+              <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 pt-16">
+                <p className="text-white font-bold text-xl leading-tight drop-shadow-sm">
+                  {typeof p.asking_price === "number" ? formatINR.format(p.asking_price) : "Price on Request"}
+                </p>
+              </div>
             </div>
-            <div className="p-4 space-y-2">
-              <h3 className="font-semibold text-gray-900 truncate">{p.title}</h3>
-              <div className="text-sm text-gray-700">{p.city || "-"} • {p.property_type || "-"}</div>
-              <div className="text-sm text-gray-700">{p.area_sqft ? `${p.area_sqft} sqft` : "-"}</div>
-              <div className="flex justify-end">
-                <LoadingButton href={`/properties/${p.id}`} variant="primary">View</LoadingButton>
+            
+            <div className="p-4 flex-1 flex flex-col">
+              <h3 className="font-semibold text-gray-900 mb-1 truncate text-lg group-hover:text-primary transition-colors" title={p.title}>{p.title}</h3>
+              
+              <div className="flex items-center text-gray-500 text-sm mb-4">
+                <MapPin className="w-3.5 h-3.5 mr-1.5 flex-shrink-0 text-gray-400" />
+                <span className="truncate">{p.city || "Location not specified"}</span>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3 mt-auto pt-3 border-t border-gray-100">
+                 <div className="flex items-center text-gray-600 text-sm">
+                   <Ruler className="w-4 h-4 mr-2 text-gray-400" />
+                   <span className="font-medium">{p.area_sqft ? p.area_sqft.toLocaleString() : "-"}</span>
+                   <span className="text-xs ml-1 text-gray-400">sqft</span>
+                 </div>
+                 
+                 <div className="flex justify-end">
+                   <Link 
+                     href={`/properties/${p.id}`}
+                     className="text-primary text-sm font-medium hover:text-primary/80 flex items-center group/link"
+                   >
+                     View Details
+                    <ArrowRight className="w-3 h-3 ml-1 transition-transform group-hover/link:translate-x-0.5" />
+                  </Link>
+                 </div>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      <div ref={sentinelRef} className="h-12" />
+      <div ref={sentinelRef} className="h-4" />
 
       {loading && (
-        <div className="flex items-center justify-center py-4 text-gray-600"><svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Loading...</div>
+        <div className="flex items-center justify-center py-8">
+          <div className="flex flex-col items-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-2"></div>
+            <span className="text-sm text-gray-500">Loading properties...</span>
+          </div>
+        </div>
       )}
 
       <Modal open={filtersOpen} onClose={() => setFiltersOpen(false)} title="Filters">
-        Feature coming soon
+        <div className="p-4">
+          <p className="text-gray-500 text-center">Advanced filters coming soon</p>
+        </div>
       </Modal>
     </div>
   );

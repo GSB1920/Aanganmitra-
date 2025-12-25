@@ -2,16 +2,17 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useUploadContext } from "@/components/ui/upload-context";
 
 type Props = {
   propertyId: string;
   onUpload: (formData: FormData) => Promise<void>;
-  onUploadingChange?: (uploading: boolean) => void;
 };
 
-export default function ImageUploader({ propertyId, onUpload, onUploadingChange }: Props) {
+export default function ImageUploader({ propertyId, onUpload }: Props) {
   const [uploading, startTransition] = useTransition();
   const [status, setStatus] = useState<string>("");
+  const { setUploading } = useUploadContext();
   const router = useRouter();
 
   async function compressImage(file: File): Promise<File> {
@@ -39,7 +40,7 @@ export default function ImageUploader({ propertyId, onUpload, onUploadingChange 
     const files = e.target.files;
     if (!files || files.length === 0) return;
     setStatus("Compressing and uploading...");
-    onUploadingChange?.(true);
+    setUploading(true);
 
     startTransition(async () => {
       for (const f of Array.from(files)) {
@@ -50,7 +51,7 @@ export default function ImageUploader({ propertyId, onUpload, onUploadingChange 
         await onUpload(fd);
       }
       setStatus("Upload complete");
-      onUploadingChange?.(false);
+      setUploading(false);
       router.refresh();
       setTimeout(() => setStatus(""), 2500);
     });
