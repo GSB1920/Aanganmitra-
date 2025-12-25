@@ -157,6 +157,20 @@ export default async function EditPropertyPage(
                     </div>
 
                     <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700">Listing Type</label>
+                      <div className="flex gap-4">
+                        <label className="flex items-center p-2 border rounded-lg cursor-pointer hover:bg-gray-50 flex-1">
+                          <input type="radio" name="listing_type" value="sale" defaultChecked={property.listing_type !== 'rental'} className="w-4 h-4 text-primary focus:ring-primary" />
+                          <span className="ml-2 text-gray-700 text-sm">For Sale</span>
+                        </label>
+                        <label className="flex items-center p-2 border rounded-lg cursor-pointer hover:bg-gray-50 flex-1">
+                          <input type="radio" name="listing_type" value="rental" defaultChecked={property.listing_type === 'rental'} className="w-4 h-4 text-primary focus:ring-primary" />
+                          <span className="ml-2 text-gray-700 text-sm">For Rent</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
                       <label htmlFor="property_type" className="text-sm font-medium text-gray-700">Property Type</label>
                       <div className="relative">
                         <Home className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />

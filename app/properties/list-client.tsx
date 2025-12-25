@@ -15,6 +15,7 @@ type Property = {
   title: string;
   city: string | null;
   property_type: string | null;
+  listing_type: string | null;
   area_sqft: number | null;
   asking_price: number | null;
 };
@@ -174,6 +175,16 @@ export default function PropertiesListClient() {
                  <span className="bg-white/95 backdrop-blur-sm text-gray-900 text-xs font-bold px-2.5 py-1 rounded-md shadow-sm border border-gray-100 flex items-center uppercase tracking-wide">
                    <Home className="w-3 h-3 mr-1 text-primary" />
                    {p.property_type || "Property"}
+                 </span>
+              </div>
+              <div className="absolute top-3 right-3">
+                 <span className={cn(
+                   "backdrop-blur-sm text-xs font-bold px-2.5 py-1 rounded-md shadow-sm border flex items-center uppercase tracking-wide",
+                   p.listing_type === 'rental' 
+                     ? "bg-blue-50/95 text-blue-700 border-blue-100" 
+                     : "bg-green-50/95 text-green-700 border-green-100"
+                 )}>
+                   {p.listing_type === 'rental' ? 'Rent' : 'Sale'}
                  </span>
               </div>
               <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 pt-16">

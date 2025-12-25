@@ -10,6 +10,7 @@ export async function updatePropertyAction(id: string, formData: FormData) {
     title: formData.get("title") as string,
     city: formData.get("city") as string,
     asking_price: Number(formData.get("asking_price")),
+    listing_type: formData.get("listing_type") as string,
   };
 
   const { error } = await supabase
