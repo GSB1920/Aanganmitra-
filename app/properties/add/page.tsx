@@ -3,7 +3,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, Save, Home, Info, IndianRupee, MapPin, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Save, Home, Info, IndianRupee, MapPin, CheckCircle2, Loader2 } from "lucide-react";
 import LocationPicker from "@/components/ui/location-picker";
 
 export default function AddPropertyPage() {
@@ -387,7 +387,9 @@ export default function AddPropertyPage() {
                   className="px-8 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center font-medium shadow-sm transition-colors"
                 >
                   {loading ? (
-                    'Adding Property...'
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Adding...
+                    </>
                   ) : (
                     <>
                       <Save className="w-4 h-4 mr-2" /> Add Property

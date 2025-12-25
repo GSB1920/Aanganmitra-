@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bell, ChevronDown, Menu, User, LogOut, Search, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import LoadingButton from "@/components/ui/loading-button";
 
 type Props = {
   userPresent: boolean;
@@ -102,12 +101,18 @@ export default function Header({ userPresent, isAdmin, onToggleSidebar }: Props)
         <div className="flex items-center gap-4">
           {!userPresent ? (
             <div className="flex items-center gap-2">
-              <LoadingButton href="/login" variant="ghost" className="text-gray-600 font-medium">
+              <Link 
+                href="/login" 
+                className="inline-flex items-center justify-center rounded px-4 py-2 text-sm font-medium transition hover:bg-primary/10 text-gray-600"
+              >
                 Log in
-              </LoadingButton>
-              <LoadingButton href="/signup" variant="primary" className="shadow-sm">
+              </Link>
+              <Link 
+                href="/signup" 
+                className="inline-flex items-center justify-center rounded px-4 py-2 text-sm font-medium transition bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+              >
                 Get Started
-              </LoadingButton>
+              </Link>
             </div>
           ) : (
             <div className="flex items-center gap-3 md:gap-4">

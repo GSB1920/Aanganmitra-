@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { supabaseServer } from "@/lib/supabase/server";
 import PropertiesListClient from "./list-client";
-import LoadingButton from "@/components/ui/loading-button";
 import { Plus, Building2, Wallet, Home, BarChart3, TrendingUp } from "lucide-react";
 
 export default async function PropertiesListPage({
@@ -64,10 +63,13 @@ export default async function PropertiesListPage({
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
           <p className="text-gray-500 mt-2 text-lg">Manage your real estate portfolio</p>
         </div>
-        <LoadingButton href="/properties/add" variant="primary" className="shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all">
+        <Link 
+          href="/properties/add" 
+          className="inline-flex items-center justify-center rounded px-4 py-2 text-sm font-medium transition bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/25 hover:shadow-primary/40"
+        >
           <Plus className="w-5 h-5 mr-2" />
           Add Property
-        </LoadingButton>
+        </Link>
       </div>
 
       {/* Stats Cards */}

@@ -1,6 +1,7 @@
 import "./globals.css";
 import { supabaseServer } from "@/lib/supabase/server";
 import AppShell from "@/components/layout/AppShell";
+import NextTopLoader from 'nextjs-toploader';
 
 export const metadata = {
   title: "Aangan Mitra",
@@ -23,6 +24,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en">
       <body>
+        <NextTopLoader color="#2563EB" showSpinner={false} />
         <AppShell userPresent={!!user} isAdmin={role === "admin"}>
           {children}
         </AppShell>
