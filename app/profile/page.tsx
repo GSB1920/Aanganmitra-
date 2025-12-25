@@ -1,5 +1,6 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import SubmitButton from "@/components/ui/submit-button";
+import GoogleMapsUsageCard from "@/components/ui/google-maps-usage-card";
 import { User, Mail, Phone, Save, Shield, Camera } from "lucide-react";
 import Link from "next/link";
 
@@ -136,6 +137,9 @@ export default async function ProfilePage() {
                 </form>
               </div>
             </div>
+
+            {/* Google Maps Usage Info (Admin/Owner Visibility) */}
+            <GoogleMapsUsageCard />
           </div>
         </div>
       </div>

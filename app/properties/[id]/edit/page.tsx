@@ -4,6 +4,7 @@ import Link from "next/link";
 import ImageUploader from "./image-uploader";
 import { UploadProvider } from "@/components/ui/upload-context";
 import SaveSubmit from "@/components/ui/save-submit";
+import FormLocationPicker from "@/components/ui/form-location-picker";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Building2, MapPin, Home, Ruler, User, Phone, IndianRupee, ArrowLeft, Image as ImageIcon } from "lucide-react";
 
@@ -201,17 +202,22 @@ export default async function EditPropertyPage(
                   </div>
 
                   <div className="space-y-2">
-                    <label htmlFor="address" className="text-sm font-medium text-gray-700">Full Address</label>
-                    <textarea 
-                      id="address" 
-                      name="address" 
-                      defaultValue={property.address || ""} 
-                      rows={3} 
-                      className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none" 
-                      placeholder="Enter detailed address"
+                      <label htmlFor="address" className="text-sm font-medium text-gray-700">Full Address</label>
+                      <textarea 
+                        id="address" 
+                        name="address" 
+                        defaultValue={property.address || ""} 
+                        rows={3} 
+                        className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none" 
+                        placeholder="Enter detailed address"
+                      />
+                    </div>
+
+                    <FormLocationPicker 
+                      initialLat={property.latitude} 
+                      initialLng={property.longitude} 
                     />
                   </div>
-                </div>
               </div>
 
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
