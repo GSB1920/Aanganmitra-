@@ -1,7 +1,6 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import LoadingButton from "@/components/ui/loading-button";
 import SubmitButton from "@/components/ui/submit-button";
 import ImageWithLoader from "@/components/ui/image-with-loader";
 import Carousel from "@/components/ui/carousel";
@@ -96,9 +95,12 @@ export default async function PropertyViewPage({
           </div>
         </div>
         <div className="flex gap-3">
-          <LoadingButton href={`/properties/${property.id}/edit`} variant="secondary" className="shadow-sm border border-gray-300">
+          <Link 
+            href={`/properties/${property.id}/edit`} 
+            className="inline-flex items-center justify-center rounded px-4 py-2 text-sm font-medium transition bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm border border-gray-300"
+          >
             <Edit className="w-4 h-4 mr-2" /> Edit
-          </LoadingButton>
+          </Link>
           <form
             action={async () => {
               "use server";

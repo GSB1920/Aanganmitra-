@@ -1,6 +1,5 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import Link from "next/link";
-import LoadingButton from "@/components/ui/loading-button";
 import { Clock, Home, ArrowRight, ShieldCheck } from "lucide-react";
 
 export default async function PendingApprovalPage() {
@@ -56,9 +55,12 @@ export default async function PendingApprovalPage() {
               </Link>
               
               {!user && (
-                <LoadingButton href="/login" variant="primary" className="w-full justify-center">
+                <Link 
+                  href="/login" 
+                  className="inline-flex items-center justify-center rounded px-4 py-2 text-sm font-medium transition bg-primary text-primary-foreground hover:bg-primary/90 w-full"
+                >
                   Login to Account <ArrowRight className="w-4 h-4 ml-2" />
-                </LoadingButton>
+                </Link>
               )}
             </div>
           </div>

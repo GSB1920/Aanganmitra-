@@ -138,8 +138,8 @@ export default async function ProfilePage() {
               </div>
             </div>
 
-            {/* Google Maps Usage Info (Admin/Owner Visibility) */}
-            <GoogleMapsUsageCard />
+            {/* Google Maps Usage Info (Admin Only) */}
+            {profile?.role === "admin" && <GoogleMapsUsageCard />}
           </div>
         </div>
       </div>

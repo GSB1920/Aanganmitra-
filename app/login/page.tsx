@@ -12,11 +12,19 @@ export default function LoginPage() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
+    setMessage(""); // Clear previous errors
     const formData = new FormData(e.currentTarget);
 
-    const res = await loginAction(formData);
-    if (res?.error) {
-      setMessage(res.error);
+    try {
+      const res = await loginAction(formData);
+      if (res?.error) {
+        setMessage(res.error);
+        setLoading(false);
+      }
+      // If no error, we are redirecting, so keep loading true
+    } catch (error) {
+      console.error("Login error:", error);
+      setMessage("An unexpected error occurred. Please try again.");
       setLoading(false);
     }
   }
