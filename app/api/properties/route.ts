@@ -38,6 +38,8 @@ export async function POST(request: NextRequest) {
       rera: formData.get('rera') === 'on',
       area_sqft: formData.get('area_sqft') ? Number(formData.get('area_sqft')) : null,
       rate_per_sqft: formData.get('rate_per_sqft') ? Number(formData.get('rate_per_sqft')) : null,
+      latitude: formData.get('latitude') ? parseFloat(formData.get('latitude') as string) : null,
+      longitude: formData.get('longitude') ? parseFloat(formData.get('longitude') as string) : null,
       owner_name: formData.get('owner_name') as string,
       owner_address: formData.get('owner_address') as string,
       owner_phone: formData.get('owner_phone') as string,

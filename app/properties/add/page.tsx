@@ -4,12 +4,20 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Save, Home, Info, IndianRupee, MapPin, CheckCircle2 } from "lucide-react";
+import LocationPicker from "@/components/ui/location-picker";
 
 export default function AddPropertyPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [coords, setCoords] = useState<{ lat: number | null; lng: number | null }>({ lat: null, lng: null });
+  
+  // Form State
+  const [city, setCity] = useState("");
+  const [area, setArea] = useState("");
+  const [address, setAddress] = useState("");
+
   const formRef = useRef<HTMLFormElement>(null);
 
   function validateStep(currentStep: number) {
@@ -148,9 +156,27 @@ export default function AddPropertyPage() {
                   <textarea
                     name="address"
                     rows={3}
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-gray-900 resize-none"
                     placeholder="Complete property address"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Pin Location on Map
+                  </label>
+                  <input type="hidden" name="latitude" value={coords.lat || ""} />
+                  <input type="hidden" name="longitude" value={coords.lng || ""} />
+                  <LocationPicker
+                    latitude={coords.lat}
+                    longitude={coords.lng}
+                    onChange={(lat, lng) => setCoords({ lat, lng })}
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    Click on the map to mark the exact location of the property.
+                  </p>
                 </div>
             </div>
 

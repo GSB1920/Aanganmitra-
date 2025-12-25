@@ -5,7 +5,8 @@ import LoadingButton from "@/components/ui/loading-button";
 import SubmitButton from "@/components/ui/submit-button";
 import ImageWithLoader from "@/components/ui/image-with-loader";
 import Carousel from "@/components/ui/carousel";
-import { MapPin, Ruler, Home, IndianRupee, User, Phone, Map, Trash2, Edit, ChevronLeft, Building2, CheckCircle2 } from "lucide-react";
+import LocationPicker from "@/components/ui/location-picker";
+import { MapPin, Ruler, Home, IndianRupee, User, Phone, Map, Trash2, Edit, ChevronLeft, Building2, CheckCircle2, Navigation } from "lucide-react";
 
 export default async function PropertyViewPage({
   params,
@@ -192,6 +193,32 @@ export default async function PropertyViewPage({
               </div>
             </div>
           </div>
+
+          {/* Location Map */}
+          {property.latitude && property.longitude && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+                  <MapPin className="w-5 h-5 mr-2 text-primary" />
+                  Location Map
+                </h2>
+                <a 
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${property.latitude},${property.longitude}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm"
+                >
+                  <Navigation className="w-4 h-4 mr-2" />
+                  Get Directions
+                </a>
+              </div>
+              <LocationPicker 
+                latitude={property.latitude} 
+                longitude={property.longitude} 
+                readOnly={true}
+              />
+            </div>
+          )}
         </div>
 
         {/* Sidebar */}
