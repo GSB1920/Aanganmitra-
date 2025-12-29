@@ -1,4 +1,5 @@
 import { supabaseServer } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import SubmitButton from "@/components/ui/submit-button";
 import { sendEmail } from "../../lib/email";
 import { Check, X, User, Mail, Phone, Clock, AlertCircle, Shield, ArrowLeft, Filter, Search, RefreshCw } from "lucide-react";
@@ -68,7 +69,19 @@ export default async function PendingUsersPage() {
     const { data: prof } = await s.from("profiles").select("role").eq("id", admin.id).maybeSingle();
     if (prof?.role !== "admin") return;
     const id = formData.get("id") as string;
+    
+    // 1. Approve in profiles table
     await s.from("profiles").update({ approved: true }).eq("id", id);
+    
+    // 2. Confirm email in Supabase Auth (so they can login without clicking email link)
+    const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(id, { 
+      email_confirm: true 
+    });
+    
+    if (authError) {
+      console.error("Failed to confirm email for user:", id, authError);
+    }
+
     const { data: u } = await s.from("profiles").select("email,name").eq("id", id).maybeSingle();
     if (u?.email) {
       await sendEmail(u.email, "Your account is approved", `<p>Hi ${u.name || ""}, your account has been approved. You can now log in.</p>`);
@@ -119,6 +132,19 @@ export default async function PendingUsersPage() {
             <Filter className="w-4 h-4 mr-2 text-gray-500" />
             Filter
           </button>
+          
+          <form action={async () => {
+              "use server";
+              await syncProfilesAction();
+           }}>
+              <SubmitButton 
+                className="inline-flex items-center px-3 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 shadow-sm"
+                variant="secondary"
+              >
+                 <RefreshCw className="w-4 h-4 mr-2 text-gray-500" />
+                 Sync Data
+              </SubmitButton>
+           </form>
         </div>
 
         {!pending || pending.length === 0 ? (

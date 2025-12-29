@@ -4,7 +4,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { supabaseServer } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
-export async function syncProfilesAction() {
+export async function syncProfilesAction(formData?: FormData) {
   const supabase = await supabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -62,6 +62,29 @@ export async function syncProfilesAction() {
     }
   }
 
+  // Fix: Confirm emails for users who are approved in 'profiles' but not in Auth
+  const { data: approvedProfiles } = await supabaseAdmin
+    .from("profiles")
+    .select("id")
+    .eq("approved", true);
+
+  const approvedIds = new Set(approvedProfiles?.map(p => p.id) || []);
+  
+  let fixedEmailCount = 0;
+  
+  for (const u of users) {
+    if (approvedIds.has(u.id) && !u.email_confirmed_at) {
+        const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(u.id, {
+            email_confirm: true
+        });
+        if (!updateError) {
+          fixedEmailCount++;
+        } else {
+          console.error(`Failed to confirm email for user ${u.id}:`, updateError);
+        }
+    }
+  }
+
   revalidatePath("/pending-users");
-  return { success: true, count: syncedCount };
+  return { success: true, count: syncedCount, fixedEmails: fixedEmailCount };
 }
