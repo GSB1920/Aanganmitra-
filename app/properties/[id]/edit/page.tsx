@@ -41,15 +41,23 @@ export default async function EditPropertyPage(
   }
 
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user || property.created_by !== user.id) {
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user?.id).single();
+
+  const isOwner = property.created_by === user?.id;
+  const isAdmin = profile?.role === "admin";
+  // Internal team can view but CANNOT edit others' properties (unless they are owner or admin)
+  // Wait, internal team can edit "property listings added by themselves".
+  // So: Admin -> All, Owner -> Yes.
+  
+  if (!user || (!isOwner && !isAdmin)) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] p-10 text-center">
         <div className="bg-red-50 p-4 rounded-full mb-4">
           <Home className="w-8 h-8 text-red-500" />
         </div>
         <h1 className="text-xl font-semibold text-gray-900 mb-2">Access Denied</h1>
-        <p className="text-gray-500 mb-6">You can only edit your own properties.</p>
-        <Link className="text-primary hover:underline font-medium flex items-center" href="/properties">
+        <p className="text-gray-500 mb-6">You do not have permission to edit this property.</p>
+        <Link className="text-primary hover:underline font-medium flex items-center justify-center" href="/properties">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Go Back
         </Link>

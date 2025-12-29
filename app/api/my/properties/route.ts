@@ -15,11 +15,23 @@ export async function GET(req: NextRequest) {
   const from = page * limit;
   const to = from + limit - 1;
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
   let q = supabase
     .from("properties")
     .select("id,title,city,property_type,area_sqft,asking_price,listing_type")
-    .eq("created_by", user.id)
     .range(from, to);
+
+  // Filter based on role
+  // Admin & Internal: View All
+  // Broker (or others): View Own Only
+  if (profile?.role !== "admin" && profile?.role !== "internal") {
+    q = q.eq("created_by", user.id);
+  }
 
   if (query) q = q.ilike("title", `%${query}%`);
   switch (sort) {

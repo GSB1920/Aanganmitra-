@@ -5,9 +5,10 @@ import Sidebar from "./Sidebar";
 import Header from "./Header";
 import Main from "./Main";
 
-export default function AppShell({ children, userPresent, isAdmin }: { children: React.ReactNode; userPresent: boolean; isAdmin: boolean; }) {
+export default function AppShell({ children, userPresent, role }: { children: React.ReactNode; userPresent: boolean; role: string | null; }) {
   const [collapsed, setCollapsed] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const isAdmin = role === "admin";
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row">
@@ -15,7 +16,7 @@ export default function AppShell({ children, userPresent, isAdmin }: { children:
         <Sidebar 
           collapsed={collapsed} 
           mobileOpen={mobileOpen}
-          isAdmin={isAdmin} 
+          role={role} 
           onToggle={() => setCollapsed((c) => !c)}
           onMobileClose={() => setMobileOpen(false)}
         />

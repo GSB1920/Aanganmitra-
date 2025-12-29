@@ -16,19 +16,28 @@ import { cn } from "@/lib/utils";
 type Props = {
   collapsed: boolean;
   mobileOpen: boolean;
-  isAdmin: boolean;
+  role: string | null;
   onToggle: () => void;
   onMobileClose: () => void;
 };
 
-export default function Sidebar({ collapsed, mobileOpen, isAdmin, onToggle, onMobileClose }: Props) {
+export default function Sidebar({ collapsed, mobileOpen, role, onToggle, onMobileClose }: Props) {
   const pathname = usePathname();
+  const isAdmin = role === "admin";
+  const isInternal = role === "internal";
+  const isBroker = role === "broker" || role === "user"; // 'user' is default before approval/assignment
 
   const navItems = [
     { label: "Properties", href: "/properties", icon: Building2 },
-    ...(isAdmin ? [{ label: "Pending Users", href: "/pending-users", icon: Users }] : []),
-    { label: "Reports", href: "#", icon: FileText },
-    { label: "Settings", href: "#", icon: Settings },
+    ...(isAdmin ? [
+      { label: "Pending Users", href: "/pending-users", icon: Users },
+      { label: "All Users", href: "/users", icon: User }
+    ] : []),
+    // Hide Reports and Settings for Brokers
+    ...(!isBroker ? [
+      { label: "Reports", href: "#", icon: FileText },
+      { label: "Settings", href: "#", icon: Settings }
+    ] : []),
   ];
 
   return (

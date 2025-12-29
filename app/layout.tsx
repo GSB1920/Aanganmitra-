@@ -25,7 +25,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en">
       <body>
         <NextTopLoader color="#2563EB" showSpinner={false} />
-        <AppShell userPresent={!!user} isAdmin={role === "admin"}>
+        <AppShell userPresent={!!user} role={role}>
           {children}
         </AppShell>
       </body>

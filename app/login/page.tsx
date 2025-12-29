@@ -3,17 +3,20 @@
 import { useState } from "react";
 import { loginAction } from "../action/auth/login";
 import Link from "next/link";
-import { Mail, Lock, Loader2 } from "lucide-react";
+import { Mail, Lock, Loader2, Ban, ShieldAlert, ArrowRight } from "lucide-react";
 
 export default function LoginPage() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState(""); // Track email for mailto body
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setMessage(""); // Clear previous errors
     const formData = new FormData(e.currentTarget);
+    const emailVal = formData.get("email") as string;
+    setEmail(emailVal);
 
     try {
       const res = await loginAction(formData);
@@ -27,6 +30,57 @@ export default function LoginPage() {
       setMessage("An unexpected error occurred. Please try again.");
       setLoading(false);
     }
+  }
+
+  // Banned UI
+  if (message === "BANNED") {
+    const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@aanganmitra.com";
+    const subject = encodeURIComponent("Account Suspension Inquiry");
+    const body = encodeURIComponent(`Hello Support Team,\n\nMy account (${email}) has been suspended. Please review my case.\n\nThank you.`);
+    
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute -top-[30%] -right-[10%] w-[70%] h-[70%] rounded-full bg-red-50 blur-3xl" />
+          <div className="absolute -bottom-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-orange-50 blur-3xl" />
+        </div>
+
+        <div className="max-w-md w-full space-y-8 relative z-10">
+          <div className="bg-white py-10 px-6 shadow-xl rounded-2xl sm:px-10 border border-red-100 text-center">
+             <div className="mx-auto h-16 w-16 bg-red-100 rounded-full flex items-center justify-center mb-6 animate-in zoom-in duration-300">
+               <Ban className="h-8 w-8 text-red-600" />
+             </div>
+             
+             <h2 className="text-2xl font-bold text-gray-900 mb-2">Account Suspended</h2>
+             <p className="text-gray-500 mb-8 leading-relaxed">
+               Your account has been deactivated by the administrator due to policy violations or security concerns.
+             </p>
+
+             <div className="space-y-4">
+               <a 
+                 href={`mailto:${supportEmail}?subject=${subject}&body=${body}`}
+                 className="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all group"
+               >
+                 <ShieldAlert className="w-5 h-5 mr-2" />
+                 Contact Support
+                 <ArrowRight className="w-4 h-4 ml-2 opacity-70 group-hover:translate-x-1 transition-transform" />
+               </a>
+               
+               <button 
+                 onClick={() => { setMessage(""); setLoading(false); }}
+                 className="w-full flex items-center justify-center px-4 py-3 border border-gray-200 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-all"
+               >
+                 Go Back to Login
+               </button>
+             </div>
+             
+             <p className="mt-6 text-xs text-gray-400">
+               If you believe this is a mistake, please reach out to our support team immediately.
+             </p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

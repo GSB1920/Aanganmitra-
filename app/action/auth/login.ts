@@ -20,7 +20,7 @@ export async function loginAction(formData: FormData) {
 
   let { data: profile } = await supabase
     .from("profiles")
-    .select("approved")
+    .select("approved, role")
     .eq("id", user.id)
     .single();
 
@@ -36,7 +36,7 @@ export async function loginAction(formData: FormData) {
     }
     const { data: created } = await supabase
       .from("profiles")
-      .select("approved")
+      .select("approved, role")
       .eq("id", user.id)
       .single();
     profile = created || null;
@@ -44,6 +44,10 @@ export async function loginAction(formData: FormData) {
 
   if (!profile || !profile.approved) {
     return { error: "Your account is not approved yet. Please wait." };
+  }
+
+  if (profile.role === "banned") {
+    return { error: "BANNED" };
   }
 
   redirect("/properties"); 

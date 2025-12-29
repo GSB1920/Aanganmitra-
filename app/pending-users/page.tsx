@@ -50,6 +50,7 @@ export default async function PendingUsersPage() {
     .from("profiles")
     .select("id, name, email, phone, approved, role, created_at")
     .eq("approved", false)
+    .neq("role", "banned")
     .order("created_at", { ascending: false });
 
   if (error) return (
@@ -69,9 +70,10 @@ export default async function PendingUsersPage() {
     const { data: prof } = await s.from("profiles").select("role").eq("id", admin.id).maybeSingle();
     if (prof?.role !== "admin") return;
     const id = formData.get("id") as string;
+    const role = formData.get("role") as string || "broker";
     
     // 1. Approve in profiles table
-    await s.from("profiles").update({ approved: true }).eq("id", id);
+    await s.from("profiles").update({ approved: true, role: role }).eq("id", id);
     
     // 2. Confirm email in Supabase Auth (so they can login without clicking email link)
     const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(id, { 
@@ -204,15 +206,23 @@ export default async function PendingUsersPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end gap-2">
-                        <form action={approveUser}>
+                        <form action={approveUser} className="flex items-center gap-2">
                           <input type="hidden" name="id" value={u.id} />
-                          <SubmitButton className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 shadow-sm transition-colors" variant="primary">
+                          <select 
+                            name="role" 
+                            className="block w-full max-w-[140px] pl-2 pr-8 py-1.5 text-xs border border-gray-300 focus:outline-none focus:ring-primary focus:border-primary rounded-md shadow-sm"
+                            defaultValue="broker"
+                          >
+                            <option value="broker">Broker Agent</option>
+                            <option value="internal">Internal User</option>
+                          </select>
+                          <SubmitButton className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 shadow-sm transition-colors" variant="primary" size="sm">
                             <Check className="w-3 h-3 mr-1.5" /> Approve
                           </SubmitButton>
                         </form>
                         <form action={rejectUser}>
                           <input type="hidden" name="id" value={u.id} />
-                          <SubmitButton className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" variant="danger">
+                          <SubmitButton className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" variant="danger" size="sm">
                             <X className="w-3 h-3 mr-1.5" /> Reject
                           </SubmitButton>
                         </form>
