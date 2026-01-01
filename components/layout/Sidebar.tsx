@@ -31,12 +31,12 @@ export default function Sidebar({ collapsed, mobileOpen, role, onToggle, onMobil
     { label: "Properties", href: "/properties", icon: Building2 },
     ...(isAdmin ? [
       { label: "Pending Users", href: "/pending-users", icon: Users },
-      { label: "All Users", href: "/users", icon: User }
+      { label: "All Users", href: "/users", icon: User },
+      { label: "Settings", href: "/settings", icon: Settings }
     ] : []),
-    // Hide Reports and Settings for Brokers
+    // Hide Reports for Brokers
     ...(!isBroker ? [
-      { label: "Reports", href: "#", icon: FileText },
-      { label: "Settings", href: "#", icon: Settings }
+      { label: "Reports", href: "#", icon: FileText }
     ] : []),
   ];
 
